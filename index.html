@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d18">
+  <title>The Vaxel — Cosmic Archive</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #080d18;
+      color: #edf3ff;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      padding: 18px 20px;
+      border-bottom: 1px solid #26334b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo { font-size: 20px; font-weight: bold; letter-spacing: 2px; }
+    .logo span { color: #65c8ff; }
+    .hero {
+      padding: 65px 22px 45px;
+      background: radial-gradient(ellipse at top, #17365a, #080d18 70%);
+    }
+    .tag {
+      color: #65c8ff;
+      letter-spacing: 3px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    h1 { font-size: 43px; line-height: 1.1; margin: 15px 0; }
+    h1 span { color: #65c8ff; }
+    p { color: #a9b7cd; }
+    .search {
+      display: flex;
+      gap: 8px;
+      margin-top: 25px;
+    }
+    input {
+      min-width: 0;
+      flex: 1;
+      padding: 13px;
+      border: 1px solid #34445f;
+      border-radius: 9px;
+      background: #101a2b;
+      color: white;
+      font-size: 14px;
+    }
+    button {
+      padding: 12px 15px;
+      border: 0;
+      border-radius: 9px;
+      background: #65c8ff;
+      color: #08111f;
+      font-weight: bold;
+    }
+    main { padding: 25px 20px; }
+    h2 { font-size: 22px; }
+    .cards { display: grid; gap: 12px; }
+    .card {
+      padding: 18px;
+      border: 1px solid #273650;
+      border-radius: 13px;
+      background: #101827;
+    }
+    .card .symbol { font-size: 28px; }
+    .card h3 { margin: 7px 0; }
+    .label { color: #65c8ff; font-size: 12px; }
+    footer {
+      padding: 25px 20px;
+      border-top: 1px solid #26334b;
+      color: #8493aa;
+      font-size: 12px;
+    }
+    @media (min-width: 600px) {
+      .hero, main { padding-left: 8%; padding-right: 8%; }
+      h1 { font-size: 60px; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">THE <span>VAXEL</span></div>
+    <div>✦ COSMIC ARCHIVE</div>
+  </header>
+
+  <section class="hero">
+    <div class="tag">AN INDEPENDENT WORLDBUILDING PROJECT</div>
+    <h1>Beyond the<br><span>known universe.</span></h1>
+    <p>
+      Explore the Vaxel star system, discover its worlds,
+      and browse an evolving archive of the Vaxelian universe.
+    </p>
+    <div class="search">
+      <input id="search" placeholder="Search worlds..." aria-label="Search worlds">
+      <button onclick="searchWorlds()">Explore</button>
+    </div>
+  </section>
+
+  <main>
+    <div class="tag">THE ARCHIVE</div>
+    <h2>Explore the system</h2>
+    <p>Begin your journey through the worlds of Vaxel.</p>
+
+    <div class="cards" id="worlds">
+      <article class="card" data-name="vaxel star">
+        <div class="symbol">☀</div>
+        <div class="label">STELLAR OBJECT</div>
+        <h3>Vaxel</h3>
+        <p>The star at the center of the Vaxel system.</p>
+      </article>
+
+      <article class="card" data-name="virel planet">
+        <div class="symbol">◉</div>
+        <div class="label">PLANET</div>
+        <h3>Virel</h3>
+        <p>Explore the first listed planet in the system.</p>
+      </article>
+
+      <article class="card" data-name="corthis planet">
+        <div class="symbol">◉</div>
+        <div class="label">PLANET</div>
+        <h3>Corthis</h3>
+        <p>Discover another world in the Vaxel system.</p>
+      </article>
+
+      <article class="card" data-name="hals moonia adronia">
+        <div class="symbol">◌</div>
+        <div class="label">PLANET & MOONS</div>
+        <h3>Hals</h3>
+        <p>A world accompanied by Moonia and Adronia.</p>
+      </article>
+    </div>
+    <p id="status" aria-live="polite"></p>
+  </main>
+
+  <footer>
+    THE VAXEL · An independent worldbuilding project<br>
+    Fictional universe. Canon details will be expanded over time.
+  </footer>
+
+  <script>
+    function searchWorlds() {
+      const query = document.getElementById("search").value
+        .trim().toLowerCase();
+      const cards = document.querySelectorAll(".card");
+      let found = 0;
+
+      cards.forEach(card => {
+        const match = card.dataset.name.includes(query);
+        card.hidden = !match;
+        if (match) found++;
+      });
+
+      document.getElementById("status").textContent =
+        found ? found + " result(s) found." : "No matching worlds found.";
+    }
+
+    document.getElementById("search").addEventListener("keydown", event => {
+      if (event.key === "Enter") searchWorlds();
+    });
+  </script>
+</body>
+  </html>
+  
