@@ -3,170 +3,421 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080d18">
   <title>The Vaxel — Cosmic Archive</title>
   <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d18;
+      --panel: #101a2b;
+      --line: #283a55;
+      --text: #edf4ff;
+      --muted: #a5b5cc;
+      --blue: #70ceff;
+    }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: #080d18;
-      color: #edf3ff;
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.65 Arial, sans-serif;
     }
     header {
-      padding: 18px 20px;
-      border-bottom: 1px solid #26334b;
+      padding: 17px 20px;
+      border-bottom: 1px solid var(--line);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
-    .logo { font-size: 20px; font-weight: bold; letter-spacing: 2px; }
-    .logo span { color: #65c8ff; }
+    .logo {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+    .logo span, .accent { color: var(--blue); }
+    header a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+    }
     .hero {
-      padding: 65px 22px 45px;
-      background: radial-gradient(ellipse at top, #17365a, #080d18 70%);
+      padding: 54px 21px 38px;
+      background: radial-gradient(ellipse at 50% 0%, #1b4169, var(--bg) 72%);
     }
-    .tag {
-      color: #65c8ff;
-      letter-spacing: 3px;
+    .eyebrow {
+      color: var(--blue);
       font-size: 11px;
       font-weight: bold;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
     }
-    h1 { font-size: 43px; line-height: 1.1; margin: 15px 0; }
-    h1 span { color: #65c8ff; }
-    p { color: #a9b7cd; }
+    h1 {
+      font-size: clamp(38px, 10vw, 65px);
+      line-height: 1.08;
+      margin: 14px 0;
+      letter-spacing: -1.5px;
+    }
+    h1 span { color: var(--blue); }
+    p { color: var(--muted); }
+    .hero p { max-width: 540px; }
     .search {
       display: flex;
       gap: 8px;
-      margin-top: 25px;
+      margin-top: 23px;
+      max-width: 540px;
     }
     input {
       min-width: 0;
+      width: 100%;
       flex: 1;
       padding: 13px;
-      border: 1px solid #34445f;
+      border: 1px solid #405573;
       border-radius: 9px;
-      background: #101a2b;
+      background: #0b1423;
       color: white;
-      font-size: 14px;
+      font-size: 15px;
     }
     button {
-      padding: 12px 15px;
+      padding: 12px 16px;
       border: 0;
       border-radius: 9px;
-      background: #65c8ff;
-      color: #08111f;
+      background: var(--blue);
+      color: #07111f;
       font-weight: bold;
+      cursor: pointer;
     }
-    main { padding: 25px 20px; }
-    h2 { font-size: 22px; }
+    main { padding: 28px 20px 45px; }
+    .section-head { margin-bottom: 19px; }
+    h2 { font-size: 23px; margin: 5px 0; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      margin: 24px 0 36px;
+    }
+    .stat {
+      padding: 13px 9px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #0d1523;
+    }
+    .stat strong { display: block; font-size: 23px; }
+    .stat span { color: var(--muted); font-size: 11px; }
+    .notice {
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0d1523;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 23px;
+    }
     .cards { display: grid; gap: 12px; }
     .card {
-      padding: 18px;
-      border: 1px solid #273650;
+      padding: 17px;
+      border: 1px solid var(--line);
       border-radius: 13px;
-      background: #101827;
+      background: var(--panel);
+      min-width: 0;
     }
-    .card .symbol { font-size: 28px; }
-    .card h3 { margin: 7px 0; }
-    .label { color: #65c8ff; font-size: 12px; }
-    footer {
-      padding: 25px 20px;
-      border-top: 1px solid #26334b;
-      color: #8493aa;
+    .card[hidden] { display: none; }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .symbol { font-size: 27px; line-height: 1.3; }
+    .number { color: #7386a3; font-size: 12px; }
+    .type {
+      color: var(--blue);
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    h3 { font-size: 19px; margin: 6px 0; overflow-wrap: anywhere; }
+    .card p { font-size: 13px; margin: 5px 0 12px; }
+    .facts {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .fact {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 5px 0;
       font-size: 12px;
     }
-    @media (min-width: 600px) {
-      .hero, main { padding-left: 8%; padding-right: 8%; }
-      h1 { font-size: 60px; }
-      .cards { grid-template-columns: repeat(2, 1fr); }
+    .fact span:first-child { color: var(--muted); }
+    .fact span:last-child {
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+    .unknown { color: #9caac0; }
+    .moon-box {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #0a1321;
+      font-size: 12px;
+    }
+    .moon-box strong { color: var(--blue); }
+    .empty {
+      display: none;
+      padding: 24px 0;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty.show { display: block; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 23px 20px;
+      color: #8292aa;
+      font-size: 12px;
+    }
+    @media (min-width: 650px) {
+      .hero, main { padding-left: max(25px, 8%); padding-right: max(25px, 8%); }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats { max-width: 600px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">THE <span>VAXEL</span></div>
-    <div>✦ COSMIC ARCHIVE</div>
+    <a href="#archive">COSMIC ARCHIVE ↘</a>
   </header>
 
   <section class="hero">
-    <div class="tag">AN INDEPENDENT WORLDBUILDING PROJECT</div>
-    <h1>Beyond the<br><span>known universe.</span></h1>
+    <div class="eyebrow">An independent worldbuilding project</div>
+    <h1>Explore the<br><span>Vaxel system.</span></h1>
     <p>
-      Explore the Vaxel star system, discover its worlds,
-      and browse an evolving archive of the Vaxelian universe.
+      A growing encyclopedia of stars, planets, moons,
+      astronomical records, and the wider Vaxelian universe.
     </p>
     <div class="search">
-      <input id="search" placeholder="Search worlds..." aria-label="Search worlds">
-      <button onclick="searchWorlds()">Explore</button>
+      <input id="search" type="search"
+        placeholder="Search planets, moons, types..."
+        aria-label="Search the cosmic archive">
+      <button id="searchButton">Search</button>
     </div>
   </section>
 
-  <main>
-    <div class="tag">THE ARCHIVE</div>
-    <h2>Explore the system</h2>
-    <p>Begin your journey through the worlds of Vaxel.</p>
+  <main id="archive">
+    <div class="section-head">
+      <div class="eyebrow">System database</div>
+      <h2>Objects in the Vaxel system</h2>
+      <p>Browse the current canonical orbital sequence.</p>
+    </div>
 
-    <div class="cards" id="worlds">
-      <article class="card" data-name="vaxel star">
-        <div class="symbol">☀</div>
-        <div class="label">STELLAR OBJECT</div>
+    <div class="stats">
+      <div class="stat">
+        <strong>1</strong>
+        <span>Central star</span>
+      </div>
+      <div class="stat">
+        <strong>10</strong>
+        <span>Planets / objects</span>
+      </div>
+      <div class="stat">
+        <strong>2</strong>
+        <span>Named moons</span>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>Canon note:</strong> Confirmed information is shown
+      where available. Unknown values are intentionally left
+      unspecified instead of being invented.
+    </div>
+
+    <div class="cards" id="cards">
+
+      <article class="card" data-search="vaxel star central star">
+        <div class="card-top">
+          <div class="symbol">☀</div>
+          <div class="number">STAR 00</div>
+        </div>
+        <div class="type">Central star</div>
         <h3>Vaxel</h3>
         <p>The star at the center of the Vaxel system.</p>
+        <div class="facts">
+          <div class="fact"><span>Object type</span><span>Star</span></div>
+          <div class="fact"><span>Mass</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Temperature</span><span class="unknown">Unknown</span></div>
+        </div>
       </article>
 
-      <article class="card" data-name="virel planet">
-        <div class="symbol">◉</div>
-        <div class="label">PLANET</div>
+      <article class="card" data-search="virel terrestrial planet">
+        <div class="card-top"><div class="symbol">◉</div><div class="number">01</div></div>
+        <div class="type">Terrestrial planet</div>
         <h3>Virel</h3>
-        <p>Explore the first listed planet in the system.</p>
+        <p>First planet in the established orbital sequence.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Terrestrial</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Temperature</span><span class="unknown">Unknown</span></div>
+        </div>
       </article>
 
-      <article class="card" data-name="corthis planet">
-        <div class="symbol">◉</div>
-        <div class="label">PLANET</div>
+      <article class="card" data-search="corthis terrestrial planet">
+        <div class="card-top"><div class="symbol">◉</div><div class="number">02</div></div>
+        <div class="type">Terrestrial planet</div>
         <h3>Corthis</h3>
-        <p>Discover another world in the Vaxel system.</p>
+        <p>Second planet in the established orbital sequence.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Terrestrial</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Temperature</span><span class="unknown">Unknown</span></div>
+        </div>
       </article>
 
-      <article class="card" data-name="hals moonia adronia">
-        <div class="symbol">◌</div>
-        <div class="label">PLANET & MOONS</div>
+      <article class="card" data-search="hals terrestrial planet moonia adronia moons">
+        <div class="card-top"><div class="symbol">◉</div><div class="number">03</div></div>
+        <div class="type">Terrestrial planet</div>
         <h3>Hals</h3>
-        <p>A world accompanied by Moonia and Adronia.</p>
+        <p>Third planet in the established orbital sequence.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Terrestrial</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Temperature</span><span class="unknown">Unknown</span></div>
+        </div>
+        <div class="moon-box">
+          <strong>Named moons</strong><br>
+          Moonia · Adronia
+        </div>
       </article>
+
+      <article class="card" data-search="cyron terrestrial planet">
+        <div class="card-top"><div class="symbol">◉</div><div class="number">04</div></div>
+        <div class="type">Terrestrial planet</div>
+        <h3>Cyron</h3>
+        <p>Fourth planet in the established orbital sequence.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Terrestrial</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Temperature</span><span class="unknown">Unknown</span></div>
+        </div>
+      </article>
+
+      <article class="card" data-search="velmora terrestrial planet cold minus 36">
+        <div class="card-top"><div class="symbol">❄</div><div class="number">05</div></div>
+        <div class="type">Terrestrial planet</div>
+        <h3>Velmora</h3>
+        <p>A terrestrial world with a confirmed average temperature record.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Terrestrial</span></div>
+          <div class="fact"><span>Average temperature</span><span>−36 °C</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+        </div>
+      </article>
+
+      <article class="card" data-search="nythera jovian gas giant 3.3 au circumference">
+        <div class="card-top"><div class="symbol">◉</div><div class="number">06</div></div>
+        <div class="type">Jovian planet</div>
+        <h3>Nythera</h3>
+        <p>The first of the three major Jovian planets.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Jovian</span></div>
+          <div class="fact"><span>Orbital distance</span><span>3.3 AU</span></div>
+          <div class="fact"><span>Circumference</span><span>139,643.46</span></div>
+          <div class="fact"><span>Average temperature</span><span class="unknown">Unknown</span></div>
+        </div>
+      </article>
+
+      <article class="card" data-search="zranva jovian planet">
+        <div class="card-top"><div class="symbol">◉</div><div class="number">07</div></div>
+        <div class="type">Jovian planet</div>
+        <h3>Zranva</h3>
+        <p>Second of the three major Jovian planets.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Jovian</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Orbital distance</span><span class="unknown">Unknown</span></div>
+        </div>
+      </article>
+
+      <article class="card" data-search="orlaxis jovian planet">
+        <div class="card-top"><div class="symbol">◉</div><div class="number">08</div></div>
+        <div class="type">Jovian planet</div>
+        <h3>Orlaxis</h3>
+        <p>Third of the three major Jovian planets.</p>
+        <div class="facts">
+          <div class="fact"><span>Class</span><span>Jovian</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Orbital distance</span><span class="unknown">Unknown</span></div>
+        </div>
+      </article>
+
+      <article class="card" data-search="xenon x1 a2732 planet object">
+        <div class="card-top"><div class="symbol">◇</div><div class="number">09</div></div>
+        <div class="type">Planetary object · class unspecified</div>
+        <h3>Xenon X1 A2732</h3>
+        <p>Listed after Orlaxis in the established sequence.</p>
+        <div class="facts">
+          <div class="fact"><span>Object class</span><span class="unknown">Unspecified</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Temperature</span><span class="unknown">Unknown</span></div>
+        </div>
+      </article>
+
+      <article class="card" data-search="zenon x2 a2917 planet object">
+        <div class="card-top"><div class="symbol">◇</div><div class="number">10</div></div>
+        <div class="type">Planetary object · class unspecified</div>
+        <h3>Zenon X2 A2917</h3>
+        <p>Listed last in the established sequence.</p>
+        <div class="facts">
+          <div class="fact"><span>Object class</span><span class="unknown">Unspecified</span></div>
+          <div class="fact"><span>Radius</span><span class="unknown">Unknown</span></div>
+          <div class="fact"><span>Temperature</span><span class="unknown">Unknown</span></div>
+        </div>
+      </article>
+
     </div>
-    <p id="status" aria-live="polite"></p>
+
+    <div class="empty" id="empty">
+      No matching objects. Try another name or category.
+    </div>
   </main>
 
   <footer>
-    THE VAXEL · An independent worldbuilding project<br>
-    Fictional universe. Canon details will be expanded over time.
+    <strong>THE VAXEL</strong> · Cosmic Archive<br>
+    An independent worldbuilding project.<br>
+    Canonical data is maintained as the universe develops.
   </footer>
 
   <script>
-    function searchWorlds() {
-      const query = document.getElementById("search").value
-        .trim().toLowerCase();
-      const cards = document.querySelectorAll(".card");
-      let found = 0;
+    const searchInput = document.getElementById("search");
+    const cards = [...document.querySelectorAll(".card")];
+    const empty = document.getElementById("empty");
+
+    function filterCards() {
+      const query = searchInput.value.trim().toLowerCase();
+      let visible = 0;
 
       cards.forEach(card => {
-        const match = card.dataset.name.includes(query);
-        card.hidden = !match;
-        if (match) found++;
+        const searchable =
+          (card.innerText + " " + card.dataset.search).toLowerCase();
+        const matches = searchable.includes(query);
+        card.hidden = !matches;
+        if (matches) visible++;
       });
 
-      document.getElementById("status").textContent =
-        found ? found + " result(s) found." : "No matching worlds found.";
+      empty.classList.toggle("show", visible === 0);
     }
 
-    document.getElementById("search").addEventListener("keydown", event => {
-      if (event.key === "Enter") searchWorlds();
-    });
+    searchInput.addEventListener("input", filterCards);
+    document.getElementById("searchButton")
+      .addEventListener("click", filterCards);
   </script>
 </body>
-  </html>
-  
+</html>
