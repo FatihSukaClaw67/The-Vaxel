@@ -6,6 +6,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080d18">
   <title>The Vaxel — Cosmic Archive</title>
+
+.orbit-section { padding: 28px 20px; }
+.orbit-wrap {
+  overflow: hidden;
+  border: 1px solid #283a55;
+  border-radius: 16px;
+  background: radial-gradient(circle, #132541, #080d18 75%);
+}
+.orbit-map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.orbit-line {
+  fill: none;
+  stroke: #506580;
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+}
+.orbit-point { cursor: pointer; }
+.orbit-point circle {
+  stroke: #b9e8ff;
+  stroke-width: 1.5;
+}
+.orbit-point:focus { outline: none; }
+.orbit-point:focus circle {
+  stroke: white;
+  stroke-width: 4;
+}
+.orbit-point text {
+  fill: #edf4ff;
+  font-size: 10px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.orbit-point.selected circle {
+  stroke: #70ceff;
+  stroke-width: 4;
+}
+.orbit-info {
+  padding: 16px;
+  border-top: 1px solid #283a55;
+}
+.orbit-info h3 { margin: 4px 0; }
+.orbit-info p { margin: 5px 0; font-size: 13px; }
+.orbit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+.orbit-actions button {
+  padding: 9px 12px;
+  font-size: 12px;
+}
+.orbit-caption {
+  padding: 0 14px 14px;
+  font-size: 11px;
+}
+
   <style>
     :root {
       color-scheme: dark;
@@ -211,6 +271,65 @@
       <button id="searchButton">Search</button>
     </div>
   </section>
+
+<section class="orbit-section" id="orbit">
+  <div class="section-head">
+    <div class="eyebrow">Interactive star map</div>
+    <h2>Vaxel System Explorer</h2>
+    <p>Select an object to explore the canonical orbital order.</p>
+  </div>
+
+  <div class="orbit-wrap">
+    <svg class="orbit-map" viewBox="0 0 340 340"
+      role="group" aria-label="Interactive schematic of the Vaxel system">
+
+      <defs>
+        <radialGradient id="sunGlow">
+          <stop offset="0%" stop-color="#fff5b0"/>
+          <stop offset="55%" stop-color="#ffbd59"/>
+          <stop offset="100%" stop-color="#ff8b39" stop-opacity=".2"/>
+        </radialGradient>
+      </defs>
+
+      <g class="orbit-line">
+        <circle cx="170" cy="170" r="23"/>
+        <circle cx="170" cy="170" r="36"/>
+        <circle cx="170" cy="170" r="49"/>
+        <circle cx="170" cy="170" r="62"/>
+        <circle cx="170" cy="170" r="75"/>
+        <circle cx="170" cy="170" r="88"/>
+        <circle cx="170" cy="170" r="101"/>
+        <circle cx="170" cy="170" r="114"/>
+        <circle cx="170" cy="170" r="127"/>
+        <circle cx="170" cy="170" r="140"/>
+      </g>
+
+      <circle cx="170" cy="170" r="15"
+        fill="url(#sunGlow)"/>
+      <text x="170" y="195" fill="#ffdb8b"
+        font-size="10" text-anchor="middle">VAXEL</text>
+
+      <g id="orbitPoints"></g>
+    </svg>
+
+    <div class="orbit-info" aria-live="polite">
+      <div class="eyebrow" id="orbitType">CENTRAL STAR</div>
+      <h3 id="orbitName">Vaxel</h3>
+      <p id="orbitDescription">
+        The star at the center of the Vaxel system.
+      </p>
+      <div class="orbit-actions">
+        <button id="previousObject">← Previous</button>
+        <button id="nextObject">Next →</button>
+        <button id="openObject">Find in database ↓</button>
+      </div>
+    </div>
+    <div class="orbit-caption">
+      Schematic only — orbital distances, sizes, and positions
+      are not to scale.
+    </div>
+  </div>
+</section>
 
   <main id="archive">
     <div class="section-head">
@@ -422,183 +541,7 @@
 </body>
 </html>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080d18">
-  <title>The Vaxel — Cosmic Archive</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #080d18;
-      --panel: #101a2b;
-      --line: #283a55;
-      --text: #edf4ff;
-      --muted: #a5b5cc;
-      --blue: #70ceff;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font: 15px/1.65 Arial, sans-serif;
-    }
-    header {
-      padding: 17px 20px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-    .logo {
-      font-size: 19px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      white-space: nowrap;
-    }
-    .logo span, .accent { color: var(--blue); }
-    header a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 13px;
-    }
-    .hero {
-      padding: 54px 21px 38px;
-      background: radial-gradient(ellipse at 50% 0%, #1b4169, var(--bg) 72%);
-    }
-    .eyebrow {
-      color: var(--blue);
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-    }
-    h1 {
-      font-size: clamp(38px, 10vw, 65px);
-      line-height: 1.08;
-      margin: 14px 0;
-      letter-spacing: -1.5px;
-    }
-    h1 span { color: var(--blue); }
-    p { color: var(--muted); }
-    .hero p { max-width: 540px; }
-    .search {
-      display: flex;
-      gap: 8px;
-      margin-top: 23px;
-      max-width: 540px;
-    }
-    input {
-      min-width: 0;
-      width: 100%;
-      flex: 1;
-      padding: 13px;
-      border: 1px solid #405573;
-      border-radius: 9px;
-      background: #0b1423;
-      color: white;
-      font-size: 15px;
-    }
-    button {
-      padding: 12px 16px;
-      border: 0;
-      border-radius: 9px;
-      background: var(--blue);
-      color: #07111f;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    main { padding: 28px 20px 45px; }
-    .section-head { margin-bottom: 19px; }
-    h2 { font-size: 23px; margin: 5px 0; }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 9px;
-      margin: 24px 0 36px;
-    }
-    .stat {
-      padding: 13px 9px;
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      background: #0d1523;
-    }
-    .stat strong { display: block; font-size: 23px; }
-    .stat span { color: var(--muted); font-size: 11px; }
-    .notice {
-      padding: 13px 15px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #0d1523;
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 23px;
-    }
-    .cards { display: grid; gap: 12px; }
-    .card {
-      padding: 17px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: var(--panel);
-      min-width: 0;
-    }
-    .card[hidden] { display: none; }
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: flex-start;
-    }
-    .symbol { font-size: 27px; line-height: 1.3; }
-    .number { color: #7386a3; font-size: 12px; }
-    .type {
-      color: var(--blue);
-      font-size: 10px;
-      letter-spacing: 1.2px;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    h3 { font-size: 19px; margin: 6px 0; overflow-wrap: anywhere; }
-    .card p { font-size: 13px; margin: 5px 0 12px; }
-    .facts {
-      border-top: 1px solid var(--line);
-      padding-top: 10px;
-      margin-top: 10px;
-    }
-    .fact {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 5px 0;
-      font-size: 12px;
-    }
-    .fact span:first-child { color: var(--muted); }
-    .fact span:last-child {
-      text-align: right;
-      overflow-wrap: anywhere;
-    }
-    .unknown { color: #9caac0; }
-    .moon-box {
-      margin-top: 12px;
-      padding: 10px;
-      border-radius: 8px;
-      background: #0a1321;
-      font-size: 12px;
-    }
-    .moon-box strong { color: var(--blue); }
-    .empty {
-      display: none;
-      padding: 24px 0;
-      color: var(--muted);
-      text-align: center;
-    }
-    .empty.show { display: block; }
-    footer {
+<
       border-top: 1px solid var(--line);
       padding: 23px 20px;
       color: #8292aa;
@@ -841,6 +784,106 @@
     searchInput.addEventListener("input", filterCards);
     document.getElementById("searchButton")
       .addEventListener("click", filterCards);
+
+const orbitObjects = [
+  ["Vaxel", "Central star", "Star at the center of the system."],
+  ["Virel", "Terrestrial planet", "First planet in the canonical sequence."],
+  ["Corthis", "Terrestrial planet", "Second planet in the canonical sequence."],
+  ["Hals", "Terrestrial planet", "Third planet. Its moons are Moonia and Adronia."],
+  ["Cyron", "Terrestrial planet", "Fourth planet in the canonical sequence."],
+  ["Velmora", "Terrestrial planet", "Confirmed average temperature: −36 °C."],
+  ["Nythera", "Jovian planet", "First of the three major Jovian planets."],
+  ["Zranva", "Jovian planet", "Second of the three major Jovian planets."],
+  ["Orlaxis", "Jovian planet", "Third of the three major Jovian planets."],
+  ["Xenon X1 A2732", "Class unspecified", "Listed after Orlaxis in the canon."],
+  ["Zenon X2 A2917", "Class unspecified", "Last object in the canonical sequence."]
+];
+
+const orbitColors = [
+  "#ffbd59", "#75d7ff", "#82aaff", "#70e1c2",
+  "#b9a0ff", "#b9e8ff", "#e4a4ff", "#f2b1a2",
+  "#f2d18b", "#c0d1e7", "#9bb3ff"
+];
+
+let selectedOrbit = 0;
+const pointLayer = document.getElementById("orbitPoints");
+
+orbitObjects.forEach((obj, i) => {
+  if (i === 0) return;
+
+  const angle = (-90 + (i - 1) * 36) * Math.PI / 180;
+  const radius = 23 + (i - 1) * 13;
+  const x = 170 + radius * Math.cos(angle);
+  const y = 170 + radius * Math.sin(angle);
+
+  const group = document.createElementNS(
+    "http://www.w3.org/2000/svg", "g"
+  );
+  group.setAttribute("class", "orbit-point");
+  group.setAttribute("tabindex", "0");
+  group.setAttribute("role", "button");
+  group.setAttribute("aria-label", obj[0]);
+  group.dataset.index = i;
+
+  const circle = document.createElementNS(
+    "http://www.w3.org/2000/svg", "circle"
+  );
+  circle.setAttribute("cx", x);
+  circle.setAttribute("cy", y);
+  circle.setAttribute("r", i === 5 ? 5 : 4);
+  circle.setAttribute("fill", orbitColors[i]);
+
+  const label = document.createElementNS(
+    "http://www.w3.org/2000/svg", "text"
+  );
+  label.setAttribute("x", x);
+  label.setAttribute("y", y + 13);
+  label.textContent = String(i).padStart(2, "0");
+
+  group.append(circle, label);
+  group.addEventListener("click", () => showOrbitObject(i));
+  group.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      showOrbitObject(i);
+    }
+  });
+  pointLayer.appendChild(group);
+});
+
+function showOrbitObject(index) {
+  selectedOrbit = (index + orbitObjects.length) % orbitObjects.length;
+  const obj = orbitObjects[selectedOrbit];
+
+  document.getElementById("orbitName").textContent = obj[0];
+  document.getElementById("orbitType").textContent = obj[1];
+  document.getElementById("orbitDescription").textContent =
+    selectedOrbit === 0
+      ? obj[2]
+      : obj[2] + " Orbital order: " + selectedOrbit + " of 10.";
+
+  document.querySelectorAll(".orbit-point").forEach(point => {
+    point.classList.toggle(
+      "selected",
+      Number(point.dataset.index) === selectedOrbit
+    );
+  });
+}
+
+document.getElementById("previousObject").addEventListener(
+  "click", () => showOrbitObject(selectedOrbit - 1)
+);
+document.getElementById("nextObject").addEventListener(
+  "click", () => showOrbitObject(selectedOrbit + 1)
+);
+document.getElementById("openObject").addEventListener("click", () => {
+  const name = orbitObjects[selectedOrbit][0];
+  const search = document.getElementById("search");
+  search.value = name;
+  if (typeof filterCards === "function") filterCards();
+  document.getElementById("archive").scrollIntoView();
+});
+
   </script>
 </body>
 </html>
